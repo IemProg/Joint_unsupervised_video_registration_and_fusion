@@ -9,21 +9,11 @@ This project targets joint registration and fusion of two different imaging moda
 pip install -r requirements.txt
 ```
 
-# Usage:
-```
-python  main.py --input /path/to/input/video.avi --output /path/to/your/result.avi
-```
+- In order to create masks for the images, pre-trained model of MaskRCNN is required. Download Link(https://github.com/matterport/Mask_RCNN/releases).
 
-
-# Training
-We designed the scripts to be as similar as possible to the tensorflow/keras versions.
-
-```
-train.py --data_dir /my/path/to/data --gpu 0 --model_dir /my/path/to/save/models 
-```
+- For the Fusion part, we need pre-trained model of VGG-19 is also required.
 
 ### Data preparation
-You need to download the [Cityscapes](https://www.cityscapes-dataset.com/), [LIP](http://sysu-hcp.net/lip/) and [PASCAL-Context](https://cs.stanford.edu/~roozbeh/pascal-context/) datasets.
 
 Your directory tree should be look like this:
 ````bash
@@ -35,7 +25,7 @@ $Data_IR_RGB
 │       └── SAVE_3_HAK
 │       └── SAVE_4_ARO
 │ 
-├── VISIBLE
+├── VISIBLE & IR
 │   ├── SAVE_1_AFI
 │   ├── SAVE_2_AFI
 │   └── SAVE_3_HAK
@@ -43,45 +33,24 @@ $Data_IR_RGB
 
 ````
 
-### Train and test
-For example, train the HRNet-W48 on Cityscapes with a batch size of 12 on 4 GPUs:
-````bash
-python tools/train.py --cfg experiments/cityscapes/seg_hrnet_w48_train_512x1024_sgd_lr1e-2_wd5e-4_bs_12_epoch484.yaml
+### Training
+
+For example, train the provided data_set with a batch size of 100 on 1 GPUs:
+````
+python train.py --inputFrames1=PathToRGB_Frames --inputFrames2=PathToIR_Frames --output=PATH_TO_SAVE_MODEL ----name=MODEL_NAME  --epochs=NBR_OF_EPOCHS
 ````
 
-For example, evaluating our model on the Cityscapes validation set with multi-scale and flip testing:
+- We designed the scripts to be as similar as possible to the tensorflow/keras version adapted from VoxelMorph implementation.
+
+### Test
+
+For example, evaluating our model using pretrained model "registration_videoAll.ph":
 ````bash
-python tools/test.py --cfg experiments/cityscapes/seg_hrnet_w48_train_512x1024_sgd_lr1e-2_wd5e-4_bs_12_epoch484.yaml \
-                     TEST.MODEL_FILE hrnet_w48_cityscapes_cls19_1024x2048_trainset.pth \
-                     TEST.SCALE_LIST 0.5,0.75,1.0,1.25,1.5,1.75 \
-                     TEST.FLIP_TEST True
-````
-Evaluating our model on the Cityscapes test set with multi-scale and flip testing:
-````bash
-python tools/test.py --cfg experiments/cityscapes/seg_hrnet_w48_train_512x1024_sgd_lr1e-2_wd5e-4_bs_12_epoch484.yaml \
-                     DATASET.TEST_SET list/cityscapes/test.lst \
-                     TEST.MODEL_FILE hrnet_w48_cityscapes_cls19_1024x2048_trainset.pth \
-                     TEST.SCALE_LIST 0.5,0.75,1.0,1.25,1.5,1.75 \
-                     TEST.FLIP_TEST True
-````
-Evaluating our model on the PASCAL-Context validation set with multi-scale and flip testing:
-````bash
-python tools/test.py --cfg experiments/pascal_ctx/seg_hrnet_w48_cls59_480x480_sgd_lr4e-3_wd1e-4_bs_16_epoch200.yaml \
-                     DATASET.TEST_SET testval \
-                     TEST.MODEL_FILE hrnet_w48_pascal_context_cls59_480x480.pth \
-                     TEST.SCALE_LIST 0.5,0.75,1.0,1.25,1.5,1.75,2.0 \
-                     TEST.FLIP_TEST True
-````
-Evaluating our model on the LIP validation set with flip testing:
-````bash
-python tools/test.py --cfg experiments/lip/seg_hrnet_w48_473x473_sgd_lr7e-3_wd5e-4_bs_40_epoch150.yaml \
-                     DATASET.TEST_SET list/lip/testvalList.txt \
-                     TEST.MODEL_FILE hrnet_w48_lip_cls20_473x473.pth \
-                     TEST.FLIP_TEST True \
-                     TEST.NUM_SAMPLES 0
+python train.py --inputVid1=PathToRGB_Frames --inputVid2=PathToIR_Frames --inputSegFrame1=PathToSegmentedRGB_Frames --inputSegFrame2=PathToSegmentedIR_Frames --output=PATH_TO_SAVE_MODEL --model="registration_videoAll.ph"  --save=True/False to save samples
 ````
 
 # Papers: 
+
 1 - https://github.com/voxelmorph/voxelmorph
 ```
 @article{Balakrishnan_2018,

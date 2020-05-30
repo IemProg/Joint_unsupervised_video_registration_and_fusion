@@ -12,7 +12,7 @@ from model import AffineNet
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--inputFrames1", required=True,
+ap.add_argument("-r", "--inputFrames1", required=True,
     help="Path to input RGB Frames")
 
 ap.add_argument("-i", "--inputFrames2", required=True,

@@ -37,7 +37,7 @@ def fuse(inputs, model=None, with_exp=False, layer_number=2):
     with torch.no_grad():
         if model is None:
             model = vgg19(True)
-        model.cuda().eval()
+        model.cuda().eval()                        # was : model.cuda().eval()
 
         tc_inputs = []
         relus_acts = []
